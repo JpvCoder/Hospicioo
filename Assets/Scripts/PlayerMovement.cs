@@ -9,9 +9,6 @@ public class PlayerMovement : MonoBehaviour
     public float walkSpeed;
     public float sprintSpeed;
 
-
-    public float groundDrag;
-
     [Header("Jumping")]
     public float jumpForce;
     public float jumpCooldown;
@@ -28,11 +25,11 @@ public class PlayerMovement : MonoBehaviour
     public KeyCode sprintKey = KeyCode.LeftShift;
     public KeyCode crouchKey = KeyCode.LeftControl;
 
-
     [Header("Ground Check")]
     public float playerHeight;
     public LayerMask whatIsGround;
     bool grounded;
+    public float groundDrag;
 
     public Transform orientation;
 
@@ -91,9 +88,10 @@ public class PlayerMovement : MonoBehaviour
         verticalInput = Input.GetAxisRaw("Vertical");
 
         // when to jump
-        if(Input.GetKey(jumpKey) && readyToJump && grounded)
+        if(Input.GetKey(jumpKey) && readyToJump && grounded && StaminaBar.instance.currentStamina >= 200)
         {
             readyToJump = false;
+            StaminaBar.instance.UseStamina(200);
 
             Jump();
 
@@ -125,8 +123,9 @@ public class PlayerMovement : MonoBehaviour
 
 
         // Mode - Sprinting
-        if(grounded && Input.GetKey(sprintKey))
+        if(grounded && Input.GetKey(sprintKey) && StaminaBar.instance.currentStamina > 0)
         {
+            StaminaBar.instance.UseStamina(1);
             state = MovementState.sprinting;
             moveSpeed = sprintSpeed;
         }  
